@@ -1,10 +1,10 @@
 from flask import Flask
-from Exchangers import Messager
+from Senders import *
+from Senders.Usuario import Usuario
 
 app = Flask(__name__)
-
-Messager.prueba()
-
+usuario = Usuario()
+usuario.publish('Hello prueba ')
 @app.route('/')
 def _enviar_frontend():
     return 'Hello World!'
