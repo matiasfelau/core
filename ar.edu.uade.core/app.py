@@ -1,8 +1,12 @@
 from flask import Flask
+from Exchangers import Messager
+
 app = Flask(__name__)
 
+Messager.prueba()
+
 @app.route('/')
-def hello_world():  # put application's code here
+def _enviar_frontend():
     return 'Hello World!'
 
 if __name__ == '__main__':
