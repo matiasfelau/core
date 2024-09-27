@@ -1,10 +1,20 @@
+
 from flask import Flask
-from Senders import *
-from Senders.Usuario import Usuario
+from Connection.Connection import start_connection, end_connection
+from Senders.Usuario import inicializar_usuario, publish_usuario
 
 app = Flask(__name__)
-usuario = Usuario()
-usuario.publish('Hello prueba ')
+
+connection = start_connection()
+
+
+j = {
+ "ttl":"3"
+}
+inicializar_usuario()
+publish_usuario(j)
+end_connection(connection)
+
 @app.route('/')
 def _enviar_frontend():
     return 'Hello World!'

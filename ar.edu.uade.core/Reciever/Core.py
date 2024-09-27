@@ -1,6 +1,6 @@
 import pika
 
-def init():
+def inicializar_core(connection):
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='localhost'))
