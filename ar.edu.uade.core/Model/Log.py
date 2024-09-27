@@ -1,3 +1,4 @@
+"""
 import uuid
 from cassandra.cqlengine import columns
 from cassandra.cqlengine.models import Model
@@ -17,4 +18,4 @@ class LogModel(Model):
 def save_log(status, timestamp, ttl, payload, origin, destination):
     LogModel.create(status=status, timestamp=timestamp, ttl=ttl, payload=payload, origin=origin, destination=destination)
     syncronize_cassandra_tables()
-
+"""

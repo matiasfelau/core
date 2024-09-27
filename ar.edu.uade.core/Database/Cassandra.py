@@ -1,3 +1,4 @@
+"""
 import uuid
 from cassandra.cqlengine import columns
 from cassandra.cqlengine import connection
@@ -14,3 +15,4 @@ def syncronize_cassandra_tables():
 
 def stop_cassandra_connection(cluster):
     pass
+"""
