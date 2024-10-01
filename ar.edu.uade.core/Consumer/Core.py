@@ -16,6 +16,9 @@ def consume_core(channel):
     # Definir la función que se ejecutará cuando se reciba un mensaje
     def callback(ch, method, properties, body):
         print(f" [x] Recibido: {body.decode()}")
+        receiver = body["receiver"]
+        channel.basic_publish(exchange=receiver, routing_key=receiver, body=body,properties=pika.BasicProperties(
+            delivery_mode = pika.DeliveryMode.Persistent))
 
     # Decirle a RabbitMQ que queremos recibir mensajes de 'Core'
     channel.basic_consume(queue='core', on_message_callback=callback, auto_ack=True)

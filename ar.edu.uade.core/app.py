@@ -4,6 +4,9 @@ import threading
 from flask_socketio import SocketIO, emit
 from flask import Flask, render_template
 from Connection.Connection import start_rabbitmq_connection, end_connection
+from Consumer.Core import consume_core, inicializar_core
+from Utils import System
+
 """
 from Consumer.Tracing import consume_tracing, inicializar_tracing
 from Database.Cassandra import start_cassandra_connection
@@ -11,9 +14,10 @@ from Database.Cassandra import start_cassandra_connection
 from Senders.Usuario import inicializar_usuario, publish_usuario, consume_usuario
 
 app = Flask(__name__)
-host = os.getenv('FLASK_HOST', '127.0.0.1')
-port = int(os.getenv('FLASK_PORT', 5000))
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+environment_variables = System.get_environment_variables()
+
+app.config['SECRET_KEY'] = environment_variables[2] #TODO verificar
 
 socketio = SocketIO(app)
 
@@ -73,3 +77,4 @@ if __name__ == '__main__':
     #t4.start()
     #t5.start()
     t6.start()
+
