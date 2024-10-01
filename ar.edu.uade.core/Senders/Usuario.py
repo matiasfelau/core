@@ -1,9 +1,8 @@
+import pika
 from pika.exceptions import UnroutableError, ConsumerCancelled
 import json as js
 
 def inicializar_usuario(channel):
-
-    channel.confirm_delivery()
 
     channel.exchange_declare(exchange='usuario', exchange_type='direct',durable=True)
 
@@ -15,7 +14,6 @@ def inicializar_usuario(channel):
     channel.queue_declare(queue='usuario.retry', exclusive=False,durable=True)
 
     channel.queue_declare(queue='usuario.dead-letter', exclusive=False,durable=True,arguments={
-        'x-message-ttl':1000 * 60 * 60,
         'x-dead-letter-exchange': 'usuario',  # Enviar mensajes fallidos aquí
         'x-dead-letter-routing-key': 'usuario.retry'     # Routing key para los mensajes fallidos
     })
@@ -31,6 +29,7 @@ def inicializar_usuario(channel):
 
 def callback(channel,method, properties, body):
 
+    #TODO SEPARAR EN OTRA FUNCION
     # Decodificar el mensaje como JSON
     json_msg = js.loads(body.decode())
     print(" [x] Received %r" % json_msg)
@@ -42,11 +41,13 @@ def callback(channel,method, properties, body):
 
         # Reenviar el mensaje modificado a la cola 'usuario'
         nuevo_mensaje = js.dumps(json_msg)
-        channel.basic_publish(exchange='usuario', routing_key='usuario', body=nuevo_mensaje, mandatory=True)
+        channel.basic_publish(exchange='usuario', routing_key='usuario', body=nuevo_mensaje, mandatory=True,properties=pika.BasicProperties(
+            delivery_mode = pika.DeliveryMode.Persistent))
         print(f" [x] Reenviado a 'usuario' con TTL actualizado: {nuevo_mensaje}")
     else:
         nuevo_mensaje = js.dumps(json_msg)
-        channel.basic_publish(exchange='usuario', routing_key='usuario.dead-letter', body=nuevo_mensaje, mandatory=True)
+        channel.basic_publish(exchange='usuario', routing_key='usuario.dead-letter', body=nuevo_mensaje, mandatory=True,properties=pika.BasicProperties(
+            delivery_mode = pika.DeliveryMode.Persistent))
     # Acknowledge el mensaje para eliminarlo de la cola de retry
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -56,7 +57,8 @@ def callback(channel,method, properties, body):
 def publish_usuario(channel,message):
 #Decirle a RabbitMQ que queremos recibir mensajes de 'Usuario'
     try:
-        channel.basic_publish(exchange='usuario', routing_key='usuario', body=message,mandatory=True)
+        channel.basic_publish(exchange='usuario', routing_key='usuario', body=message,mandatory=True,properties=pika.BasicProperties(
+            delivery_mode = pika.DeliveryMode.Persistent))
         print(f" [x] Sent {message}")
     except UnroutableError:
         print("El mensaje no pudo ser confirmado o enrutado desde Usuario")

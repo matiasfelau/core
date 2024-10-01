@@ -32,7 +32,7 @@ js = json.dumps(diccionario)
 inicializacion de colas, exchanges y 
 
 """
-
+inicializar_core(channel)
 inicializar_usuario(channel)
 #inicializar_tracing(channel)
 """
@@ -58,12 +58,14 @@ def handle_message(data):
 
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=consume_usuario(channel), name='t1')
-    #t2 = threading.Thread(target=consume_e_commerce(channel), name='t2')
-    #t3 = threading.Thread(target=consume_gestion_financiera(channel), name='t3')
-    #t4 = threading.Thread(target=consume_gestion_interna(channel), name='t4')
-    #t5 = threading.Thread(target=consume_tracing(channel), name='t5')
-    t6 = threading.Thread(target=socketio.run(app, host=host, port=port, debug=True), name='t6')
+    t1 = threading.Thread(target=consume_usuario(channel), name='ConsumingUsuario')
+    #t2 = threading.Thread(target=consume_e_commerce(channel), name='ConsumingECommerce')
+    #t3 = threading.Thread(target=consume_gestion_financiera(channel), name='ConsumingFinanciera')
+    #t4 = threading.Thread(target=consume_gestion_interna(channel), name='ConsumingInterna')
+    #t5 = threading.Thread(target=consume_tracing(channel), name='ConsumingTracing')
+    t6 = threading.Thread(target=consume_core(channel), name='ConsumingCore')
+    t7 = threading.Thread(target=socketio.run(app, host=host, port=port, debug=True), name='runningApp')
+
 
     t1.start()
     #t2.start()

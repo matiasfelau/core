@@ -13,6 +13,7 @@ def start_rabbitmq_connection():
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
         channel = connection.channel()
+        channel.confirm_delivery()
 
     except Exception as e:
         print("\n"+"No se pudo realizar la conexión con el servidor de RabbitMQ.")
