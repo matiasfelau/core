@@ -12,11 +12,25 @@ services:
     image: core_image
     container_name: core_container
     build:
-      context: .
+      context: ar.edu.uade.core
     volumes:
-      - core_disk:/app/logs
+      - core_disk:/core_disk
     ports:
       - 8000:8000
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672  # Puerto para RabbitMQ (AMQP)
+      - 15672:15672 # Puerto para la interfaz de administración (opcional)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
 
 volumes:
   core_disk:

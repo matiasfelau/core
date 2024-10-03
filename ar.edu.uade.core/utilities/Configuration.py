@@ -1,6 +1,8 @@
 import configparser
 import os
 
+from utilities.Logs.Messaging import check_path
+
 
 def initialize_configuration_reader():
     """
@@ -8,7 +10,12 @@ def initialize_configuration_reader():
     :return: Devuelve el lector para su uso.
     """
     reader = configparser.ConfigParser()
-    reader.read('./ar.edu.uade.core/resources/config.ini')
+    #path = './ar.edu.uade.core/resources/config.ini'
+    path = '/core_disk/resources/config.ini'
+    if not os.path.exists(path):
+        write_default_configuration_file(reader)
+    else:
+        reader.read(path)
     return reader
 
 
@@ -22,3 +29,30 @@ def read_configuration_attribute(reader, group, attribute):
     """
     return reader[group][attribute]
 
+
+def write_default_configuration_file(reader):
+    """
+
+    :return:
+    """
+    reader['e_commerce'] = {
+        'max_retries': '3',
+        'min_ttl': '30000'
+    }
+    reader['gestion_financiera'] = {
+        'max_retries': '3',
+        'min_ttl': '30000'
+    }
+    reader['gestion_interna'] = {
+        'max_retries': '3',
+        'min_ttl': '30000'
+    }
+    reader['usuario'] = {
+        'max_retries': '3',
+        'min_ttl': '30000'
+    }
+
+    path = '/core_disk/resources/config.ini'
+
+    with open(path, 'w') as configfile:
+        reader.write(configfile)

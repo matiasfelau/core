@@ -30,8 +30,6 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-
-
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -43,8 +41,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Define el volumen
 VOLUME ["/core_disk"]
 
+RUN mkdir -p /core_disk && chown appuser:appuser /core_disk
+
 # Switch to the non-privileged user to run the application.
 USER appuser
+
+COPY --chown=appuser:appuser . .
 
 # Copy the source code into the container.
 COPY . .

@@ -11,9 +11,14 @@ from utilities.Configuration import initialize_configuration_reader
 from utilities.Enumerations import PossiblePublishers, PossibleKeysForEnvironmentVariables
 from utilities.Environment import *
 from utilities.Logs.Application import initialize_logging_for_application_errors
-from utilities.Logs.Messaging import initialize_logging_for_messaging_errors
+from utilities.Logs.Messaging import initialize_logging_for_messaging_errors, check_path
 
 app = Flask(__name__)
+
+check_path('/core_disk')
+check_path('/core_disk/data')
+check_path('/core_disk/data/logs')
+check_path('/core_disk/resources')
 
 #Logging
 application_logs_handler = initialize_logging_for_application_errors()
@@ -44,8 +49,6 @@ socketio = SocketIO(app)
 connection, channel = start_rabbitmq_connection(
     app,
     host)
-
-print(channel)
 
 #Queues
 #Consumers
@@ -79,43 +82,62 @@ def handle_message(data):
     socketio.emit('response', 'Server received your message: ' + data)
 
 
-if __name__ == '__main__':
-    t1 = threading.Thread(target=socketio.run(
+if __name__ == 'app':
+    port = get_value_from_environment_variable(
         app,
-        host=host,
-        port=get_value_from_environment_variable(
-            app,
-            environment_variables,
-            PossibleKeysForEnvironmentVariables.PORT.value),
-        debug=True
-    ), name='runningApp', daemon=True)
-    t2 = threading.Thread(target=consume_messages_from_core_queue(app, channel), name='consumingCore', daemon=True)
-    t3 = threading.Thread(
-        target=consume_messages_from_publisher_trapping_queue
-        ,
-        name='consumingECommerce', daemon=True)
-    t4 = threading.Thread(
-        target=consume_messages_from_publisher_trapping_queue(
-            app,
-            channel,
-            PossiblePublishers.GESTION_FINANCIERA.value),
-        name='consumingGestionFinanciera', daemon=True)
-    t5 = threading.Thread(
-        target=consume_messages_from_publisher_trapping_queue(
-            app,
-            channel,
-            PossiblePublishers.GESTION_INTERNA.value),
-        name='consumingGestionInterna', daemon=True)
-    t6 = threading.Thread(
-        target=consume_messages_from_publisher_trapping_queue(
-            app,
-            channel,
-            PossiblePublishers.USUARIO.value),
-        name='consumingUsuario', daemon=True)
+        environment_variables,
+        PossibleKeysForEnvironmentVariables.PORT.value
+    )
 
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
-    t5.start()
-    t6.start()
+    # Hilo para ejecutar la aplicación SocketIO
+    t1 = threading.Thread(
+        target=socketio.run,
+        args=(app,),
+        kwargs={'host': host, 'port': port, 'debug': True},
+        name='runningApp',
+        daemon=False
+    )
+
+    # Hilo para consumir mensajes de la cola core
+    t2 = threading.Thread(
+        target=consume_messages_from_core_queue,
+        args=(app, ),
+        name='consumingCore',
+        daemon=True
+    )
+
+    # Hilo para consumir mensajes de eCommerce
+    t3 = threading.Thread(
+        target=consume_messages_from_publisher_trapping_queue,
+        args=(app, PossiblePublishers.E_COMMERCE.value),
+        name='consumingECommerce',
+        daemon=True
+    )
+
+    # Hilo para consumir mensajes de Gestión Financiera
+    t4 = threading.Thread(
+        target=consume_messages_from_publisher_trapping_queue,
+        args=(app, PossiblePublishers.GESTION_FINANCIERA.value),
+        name='consumingGestionFinanciera',
+        daemon=True
+    )
+
+    # Hilo para consumir mensajes de Gestión Interna
+    t5 = threading.Thread(
+        target=consume_messages_from_publisher_trapping_queue,
+        args=(app, PossiblePublishers.GESTION_INTERNA.value),
+        name='consumingGestionInterna',
+        daemon=True
+    )
+
+    # Hilo para consumir mensajes de Usuario
+    t6 = threading.Thread(
+        target=consume_messages_from_publisher_trapping_queue,
+        args=(app, PossiblePublishers.USUARIO.value),
+        name='consumingUsuario',
+        daemon=True
+    )
+
+    # Iniciar todos los hilos
+    for thread in [t1, t2, t3, t4, t5, t6]:
+        thread.start()

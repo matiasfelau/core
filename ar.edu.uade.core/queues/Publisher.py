@@ -1,10 +1,14 @@
+import json
+import uuid
+
 import pika
 from pika.exceptions import UnroutableError, ConsumerCancelled
 
+from brokers.RabbitMQ import start_rabbitmq_connection
 from utilities.Configuration import read_configuration_attribute
 from utilities.Enumerations import PossiblePublishers, PossibleKeysForPublisherConfiguration
 from utilities.Logs.Application import log_application_error
-from utilities.Logs.Messaging import log_messaging_error, get_death_timestamp, get_death_reason
+from utilities.Logs.Messaging import log_messaging_error, get_death_reason
 
 MAX_RETRIES = 3
 MIN_TTL = 30000
@@ -104,7 +108,6 @@ def initialize_publisher_main_queue(app, channel, module):
     if check_valid_publisher(module):
         channel.exchange_declare(exchange=module, exchange_type='direct', durable=True)
         channel.queue_declare(queue=module, exclusive=False, durable=True, arguments={
-            'x-message-ttl': 10000,
             'x-dead-letter-exchange': f'{module}.trapping',
             'x-dead-letter-routing-key': f'{module}.trapping'
         })
@@ -136,38 +139,45 @@ def initialize_publisher_trapping_queue(app, channel, module):
             'Given module is not a valid publisher for queues.Publisher.initialize_publisher_trapping_queue')
 
 
-def consume_messages_from_publisher_trapping_queue(app, channel, module):
+def consume_messages_from_publisher_trapping_queue(app, module):
     """
     Define un algoritmo que se ejecutará con cada mensaje consumido y bloqueará un hilo para permanecer a la escucha de
     nuevos mensajes.
     :param app: Requiere la instancia de la aplicación para realizar logs por consola.
-    :param channel: Requiere el canal de la conexión con RabbitMQ.
     :param module: Requiere el nombre del módulo para el que se definirá el algoritmo y debe ser un módulo válido.
     :return:
     """
-    print(module)
+    print(f'\nHilo {module} iniciado.')
 
     def callback(ch, method, properties, body):
         headers = properties.headers or {}
+        message = json.loads(body.decode('utf-8'))
         log_messaging_error(
             app,
-            get_death_timestamp(headers),
             get_death_reason(headers),
-            body['origin'],
-            body['destination'],
-            body['case']
+            message['origin'],
+            message['destination'],
+            message['case']
         )
         edited_headers = add_death_count(headers)
         kill_message(app, channel, module, body, edited_headers)
 
     try:
-        channel.basic_consume(queue=f'{module}.trapping', on_message_callback=callback, auto_ack=True)
+        connection, channel = start_rabbitmq_connection(app, 'localhost')
+        #unique_consumer_tag = f'consumer-{uuid.uuid4()}'
+        channel.basic_consume(
+            queue=f'{module}.trapping',
+            on_message_callback=callback,
+            auto_ack=True
+            #consumer_tag=unique_consumer_tag
+            )
         channel.start_consuming()
     except ConsumerCancelled:
         log_application_error(
             app,
             'Consuming has stopped in queues.Publisher.consume_messages_from_publisher_trapping_queue')
-    except Exception:
+    except Exception as e:
+        print('el error es:', e)
         log_application_error(
             app,
             'Unknown error happened in queues.Publisher.consume_messages_from_publisher_trapping_queue')

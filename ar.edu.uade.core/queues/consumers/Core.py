@@ -1,5 +1,9 @@
+import json
+import uuid
+
 from pika.exceptions import ConsumerCancelled
 
+from brokers.RabbitMQ import start_rabbitmq_connection
 from queues.Publisher import check_valid_publisher, publish_message
 from utilities.Logs.Application import log_application_error
 
@@ -19,38 +23,45 @@ def initialize_core_queue(app, channel):
         log_application_error(app, 'Unknown error happened in queues.consumers.Core.initialize_core_queue')
 
 
-def consume_messages_from_core_queue(app, channel):
+def consume_messages_from_core_queue(app):
     """
     Define un algoritmo que se ejecutará con cada mensaje consumido y bloqueará un hilo para permanecer a la escucha de
     nuevos mensajes.
     :param app: Requiere la instancia de la aplicación para realizar logs por consola.
-    :param channel: Requiere el canal de la conexión con RabbitMQ.
     :return:
     """
-    print('hola')
 
     def callback(ch, method, properties, body):
         forward_message(app, channel, body)
 
     try:
-        channel.basic_consume(queue='core', on_message_callback=callback, auto_ack=True)
+        connection, channel = start_rabbitmq_connection(app, 'localhost')
+        #unique_consumer_tag = f'consumer-{uuid.uuid4()}'
+        channel.basic_consume(
+            queue='core',
+            on_message_callback=callback,
+            auto_ack=True
+            #consumer_tag=unique_consumer_tag
+            )
         channel.start_consuming()
     except ConsumerCancelled:
         log_application_error(app, 'Consuming has stopped in queues.consumers.Core.consume_messages_from_core_queue')
-    except Exception:
+    except Exception as e:
+        print('el error es:', e)
         log_application_error(app, 'Unknown error happened in queues.consumers.Core.consume_messages_from_core_queue')
 
 
-def forward_message(app, channel, message):
+def forward_message(app, channel, body):
     """
     Reenvia un mensaje consumido hacia su respectivo módulo de destino.
     :param app: Requiere la instancia de la aplicación para realizar logs por consola.
     :param channel: Requiere el canal de la conexión con RabbitMQ.
-    :param message: Requiere un mensaje que transmitir.
+    :param body: Requiere un mensaje que transmitir.
     :return:
     """
+    message = json.loads(body.decode('utf-8'))
     destination = message['destination'].lower()
     if check_valid_publisher(destination):
-        publish_message(app, channel, destination, message)
+        publish_message(app, channel, destination, body)
     else:
         log_application_error(app, 'Invalid destination in consumers.Core.forward_message')
