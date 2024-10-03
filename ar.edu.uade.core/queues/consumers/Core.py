@@ -27,6 +27,7 @@ def consume_messages_from_core_queue(app, channel):
     :param channel: Requiere el canal de la conexión con RabbitMQ.
     :return:
     """
+    print('hola')
 
     def callback(ch, method, properties, body):
         forward_message(app, channel, body)
@@ -50,6 +51,6 @@ def forward_message(app, channel, message):
     """
     destination = message['destination'].lower()
     if check_valid_publisher(destination):
-        publish_message(channel, destination, message)
+        publish_message(app, channel, destination, message)
     else:
         log_application_error(app, 'Invalid destination in consumers.Core.forward_message')

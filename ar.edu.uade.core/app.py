@@ -27,7 +27,7 @@ environment_variables = get_environment_variables(app)
 
 check_void_environment_variables(app, environment_variables)
 
-host = get_value_from_environment_variable(app, environment_variables, PossibleKeysForEnvironmentVariables.HOST)
+host = get_value_from_environment_variable(app, environment_variables, PossibleKeysForEnvironmentVariables.HOST.value)
 
 #Configuration
 reader = initialize_configuration_reader()
@@ -36,32 +36,31 @@ reader = initialize_configuration_reader()
 app.config['SECRET_KEY'] = get_value_from_environment_variable(
     app,
     environment_variables,
-    PossibleKeysForEnvironmentVariables.SECRET_KEY)
+    PossibleKeysForEnvironmentVariables.SECRET_KEY.value)
 
 socketio = SocketIO(app)
 
 #Connections
 connection, channel = start_rabbitmq_connection(
     app,
-    get_value_from_environment_variable(
-        app,
-        environment_variables,
-        host))
+    host)
+
+print(channel)
 
 #Queues
 #Consumers
 initialize_core_queue(app, channel)
 
 #Publishers
-e_commerce_configuration = get_publisher_configuration(app, reader, PossiblePublishers.E_COMMERCE)
-gestion_financiera_configuration = get_publisher_configuration(app, reader, PossiblePublishers.GESTION_FINANCIERA)
-gestion_interna_configuration = get_publisher_configuration(app, reader, PossiblePublishers.GESTION_INTERNA)
-usuario_configuration = get_publisher_configuration(app, reader, PossiblePublishers.USUARIO)
+e_commerce_configuration = get_publisher_configuration(app, reader, PossiblePublishers.E_COMMERCE.value)
+gestion_financiera_configuration = get_publisher_configuration(app, reader, PossiblePublishers.GESTION_FINANCIERA.value)
+gestion_interna_configuration = get_publisher_configuration(app, reader, PossiblePublishers.GESTION_INTERNA.value)
+usuario_configuration = get_publisher_configuration(app, reader, PossiblePublishers.USUARIO.value)
 
-initialize_publisher(app, channel, PossiblePublishers.E_COMMERCE, e_commerce_configuration)
-initialize_publisher(app, channel, PossiblePublishers.GESTION_FINANCIERA, gestion_financiera_configuration)
-initialize_publisher(app, channel, PossiblePublishers.GESTION_INTERNA, gestion_interna_configuration)
-initialize_publisher(app, channel, PossiblePublishers.USUARIO, usuario_configuration)
+initialize_publisher(app, channel, PossiblePublishers.E_COMMERCE.value, e_commerce_configuration)
+initialize_publisher(app, channel, PossiblePublishers.GESTION_FINANCIERA.value, gestion_financiera_configuration)
+initialize_publisher(app, channel, PossiblePublishers.GESTION_INTERNA.value, gestion_interna_configuration)
+initialize_publisher(app, channel, PossiblePublishers.USUARIO.value, usuario_configuration)
 
 
 @app.route('/')
@@ -87,34 +86,32 @@ if __name__ == '__main__':
         port=get_value_from_environment_variable(
             app,
             environment_variables,
-            PossibleKeysForEnvironmentVariables.PORT),
+            PossibleKeysForEnvironmentVariables.PORT.value),
         debug=True
-    ), name='runningApp')
-    t2 = threading.Thread(target=consume_messages_from_core_queue(app, channel), name='consumingCore')
+    ), name='runningApp', daemon=True)
+    t2 = threading.Thread(target=consume_messages_from_core_queue(app, channel), name='consumingCore', daemon=True)
     t3 = threading.Thread(
-        target=consume_messages_from_publisher_trapping_queue(
-            app,
-            channel,
-            PossiblePublishers.E_COMMERCE),
-        name='consumingECommerce')
+        target=consume_messages_from_publisher_trapping_queue
+        ,
+        name='consumingECommerce', daemon=True)
     t4 = threading.Thread(
         target=consume_messages_from_publisher_trapping_queue(
             app,
             channel,
-            PossiblePublishers.GESTION_FINANCIERA),
-        name='consumingGestionFinanciera')
+            PossiblePublishers.GESTION_FINANCIERA.value),
+        name='consumingGestionFinanciera', daemon=True)
     t5 = threading.Thread(
         target=consume_messages_from_publisher_trapping_queue(
             app,
             channel,
-            PossiblePublishers.GESTION_INTERNA),
-        name='consumingGestionInterna')
+            PossiblePublishers.GESTION_INTERNA.value),
+        name='consumingGestionInterna', daemon=True)
     t6 = threading.Thread(
         target=consume_messages_from_publisher_trapping_queue(
             app,
             channel,
-            PossiblePublishers.USUARIO),
-        name='consumingUsuario')
+            PossiblePublishers.USUARIO.value),
+        name='consumingUsuario', daemon=True)
 
     t1.start()
     t2.start()

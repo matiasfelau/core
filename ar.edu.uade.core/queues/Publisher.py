@@ -24,7 +24,7 @@ def initialize_publisher(app, channel, module, configuration):
         max_retries = get_value_from_publisher_configuration(
             app,
             configuration,
-            PossibleKeysForPublisherConfiguration.MAX_RETRIES)
+            PossibleKeysForPublisherConfiguration.MAX_RETRIES.value)
         initialize_publisher_main_queue(app, channel, module)
         initialize_publisher_trapping_queue(app, channel, module)
         initialize_publisher_retry_queues(
@@ -32,7 +32,7 @@ def initialize_publisher(app, channel, module, configuration):
             channel,
             module,
             max_retries,
-            get_value_from_publisher_configuration(app, configuration, PossibleKeysForPublisherConfiguration.MIN_TTL))
+            get_value_from_publisher_configuration(app, configuration, PossibleKeysForPublisherConfiguration.MIN_TTL.value))
         initialize_publisher_dead_letter_queue(app, channel, module, max_retries)
     else:
         log_application_error(app, 'Given module is not a valid publisher for queues.Publisher.initialize_publisher')
@@ -49,10 +49,10 @@ def get_publisher_configuration(app, reader, module):
     """
     if check_valid_publisher(module):
         configuration = (
-            (PossibleKeysForPublisherConfiguration.MAX_RETRIES,
-             int(read_configuration_attribute(reader, module, PossibleKeysForPublisherConfiguration.MAX_RETRIES))),
-            (PossibleKeysForPublisherConfiguration.MIN_TTL,
-             int(read_configuration_attribute(reader, module, PossibleKeysForPublisherConfiguration.MIN_TTL))))
+            (PossibleKeysForPublisherConfiguration.MAX_RETRIES.value,
+             int(read_configuration_attribute(reader, module, PossibleKeysForPublisherConfiguration.MAX_RETRIES.value))),
+            (PossibleKeysForPublisherConfiguration.MIN_TTL.value,
+             int(read_configuration_attribute(reader, module, PossibleKeysForPublisherConfiguration.MIN_TTL.value))))
         return configuration
     else:
         log_application_error(
@@ -104,6 +104,7 @@ def initialize_publisher_main_queue(app, channel, module):
     if check_valid_publisher(module):
         channel.exchange_declare(exchange=module, exchange_type='direct', durable=True)
         channel.queue_declare(queue=module, exclusive=False, durable=True, arguments={
+            'x-message-ttl': 10000,
             'x-dead-letter-exchange': f'{module}.trapping',
             'x-dead-letter-routing-key': f'{module}.trapping'
         })
@@ -144,6 +145,7 @@ def consume_messages_from_publisher_trapping_queue(app, channel, module):
     :param module: Requiere el nombre del módulo para el que se definirá el algoritmo y debe ser un módulo válido.
     :return:
     """
+    print(module)
 
     def callback(ch, method, properties, body):
         headers = properties.headers or {}

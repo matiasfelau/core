@@ -9,8 +9,10 @@ def initialize_logging_for_messaging_errors():
     Inicializa el sistema de logeo para los errores de mensajería, los cuales se almacenarán en archivos.
     :return: Devuelve un manejador que requiere la aplicación para poder realizar los logs.
     """
-    check_path('resources/logs/messaging/')
-    handler = TimedRotatingFileHandler(f'resources/logs/messaging/{get_date()}.log', when='midnight', interval=1)
+    #path = './ar.edu.uade.core/resources/logs/'
+    path = '/app/logs/'
+    check_path(path)
+    handler = TimedRotatingFileHandler(path + f'{get_date()}.log', when='midnight', interval=1)
     handler.setLevel(logging.WARNING)
     formatter = logging.Formatter('[%(timestamp)s] %(reason.upper)s: %(origin)s - %(destination)s - %(case)s')
     handler.setFormatter(formatter)
@@ -69,4 +71,5 @@ def get_death_timestamp(headers):
     :param headers: Requiere los headers del mensaje.
     :return: Devuelve la marca temporal del momento en el que se descartó el mensaje.
     """
+    print(headers['x-death'][0]['last-time'])
     return headers['x-death'][0]['last-time']

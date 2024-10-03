@@ -1,4 +1,5 @@
 import configparser
+import os
 
 
 def initialize_configuration_reader():
@@ -7,7 +8,7 @@ def initialize_configuration_reader():
     :return: Devuelve el lector para su uso.
     """
     reader = configparser.ConfigParser()
-    reader.read('config.ini')
+    reader.read('./ar.edu.uade.core/resources/config.ini')
     return reader
 
 
@@ -20,3 +21,4 @@ def read_configuration_attribute(reader, group, attribute):
     :return:
     """
     return reader[group][attribute]
+
