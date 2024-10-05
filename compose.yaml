@@ -28,13 +28,48 @@ services:
     ports:
       - 5672:5672  # Puerto para RabbitMQ (AMQP)
       - 15672:15672 # Puerto para la interfaz de administración (opcional)
+      - 15692:15692
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000 # Puerto Grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus_data:/prometheus
+
+  rabbitmq-exporter:
+    image: kbudde/rabbitmq-exporter
+    environment:
+      RABBITMQ_URL: http://rabbitmq:15672/
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+    ports:
+      - "9419:9419"    # RabbitMQ Exporter para Prometheus
+
+networks:
+  default:
+    driver: bridge
+
 volumes:
   core_disk:
     external: true
+  grafana_data:
+  prometheus_data:
+  rabbitmq_data:
 
 
 # The commented out section below is an example of how to define a PostgreSQL

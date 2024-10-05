@@ -13,7 +13,7 @@ def start_rabbitmq_connection(app, host):
     :return: Devuelve la conexión y el canal o None en caso de una excepción.
     """
     try:
-        parameters = pika.ConnectionParameters('172.18.0.2', 5672, '/', pika.PlainCredentials('guest', 'guest'))
+        parameters = pika.ConnectionParameters('rabbitmq', 5672, '/', pika.PlainCredentials('guest', 'guest'))
         connection = pika.BlockingConnection(parameters) #pika.ConnectionParameters(host='172.18.0.2')
         channel = connection.channel()
         channel.confirm_delivery()
