@@ -29,6 +29,7 @@ def consume_messages_from_core_queue(channel):
     :param channel:
     :return:
     """
+    print('Hilo del Core iniciado.')
 
     def callback(ch, method, properties, body):
         forward_message(channel, body)
