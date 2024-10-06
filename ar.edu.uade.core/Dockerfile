@@ -35,24 +35,23 @@ RUN adduser \
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Define el volumen
-VOLUME ["/core_disk"]
+RUN mkdir -p /core_data && chown appuser:appuser /core_data
+VOLUME ["/core_data"]
 
-RUN mkdir -p /core_disk && chown appuser:appuser /core_disk
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
 
 # Switch to the non-privileged user to run the application.
 USER appuser
 
 COPY --chown=appuser:appuser . .
 
-# Copy the source code into the container.
-COPY . .
-
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 # Run the application.
-CMD gunicorn 'app:app' --bind=0.0.0.0:8000
+#CMD gunicorn 'app:app' --bind=0.0.0.0:8000
+CMD ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]

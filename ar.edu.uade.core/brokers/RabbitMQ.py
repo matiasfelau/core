@@ -1,29 +1,37 @@
-import traceback
-
 import pika
 
-from utilities.Logs.Application import log_application_error
+from utilities.Utilities import check_void_parameter
+
+HOST = 'rabbitmq'
+PORT = 5672
 
 
-def start_rabbitmq_connection(app, host):
+def start_rabbitmq_connection(username, password, host='rabbitmq', port=5672, virtual_host='/'):
     """
     Abre una conexión con el servidor de RabbitMQ y crea un canal.
-    :param app: Requiere la instancia de la aplicación para realizar logs por consola.
-    :param host: Requiere la dirección de host que verá RabbitMQ.
     :return: Devuelve la conexión y el canal o None en caso de una excepción.
     """
     try:
-        parameters = pika.ConnectionParameters('rabbitmq', 5672, '/', pika.PlainCredentials('guest', 'guest'))
-        connection = pika.BlockingConnection(parameters) #pika.ConnectionParameters(host='172.18.0.2')
+        host = check_void_parameter(host, HOST)
+        port = check_void_parameter(port, PORT)
+
+        #Pide una conexión a RabbitMQ
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=host,
+                port=port,
+                virtual_host=virtual_host,
+                credentials=pika.PlainCredentials(
+                    username,
+                    password)))
+
+        #Abre un canal en la conexión
         channel = connection.channel()
         channel.confirm_delivery()
+
         return connection, channel
     except Exception as e:
-        error_message = str(e)
-        detailed_error = traceback.format_exc()  # Captura el traceback en formato de texto
-        print(f"El error es: {error_message}")
-        print(f"Traceback completo:\n{detailed_error}")
-        log_application_error(app, 'Unknown error happened in brokers.brokers.RabbitMQ.start_rabbitmq_connection')
+        print(f'\nError in brokers.RabbitMQ.start_rabbitmq_connection(): \n{str(e)}')
         return None, None
 
 

@@ -1,5 +1,6 @@
 global:
   scrape_interval: 15s
+  scrape_timeout: 15s
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -7,11 +8,10 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'rabbitmq'
-    scrape_interval: 30s
     metrics_path: /metrics
     static_configs:
-      - targets: [ '172.19.0.2:15692' ]
+      - targets: ['rabbitmq-exporter:9419']
 
   - job_name: 'grafana'
     static_configs:
-      - targets: [ 'grafana:3000' ]
+      - targets: ['grafana:3000']

@@ -8,19 +8,22 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
-    image: core_image
-    container_name: core_container
+  core_service:
     build:
-      context: ar.edu.uade.core
+      context: ./ar.edu.uade.core
+    image: matiasfelau/core-image
+    env_file:
+      - .env
+    container_name: core-container
     volumes:
-      - core_disk:/core_disk
+      - core_data:/core_data
     ports:
       - 8000:8000
     depends_on:
       - rabbitmq
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
 
   rabbitmq:
     image: rabbitmq:management
@@ -29,7 +32,6 @@ services:
       - 5672:5672  # Puerto para RabbitMQ (AMQP)
       - 15672:15672 # Puerto para la interfaz de administración (opcional)
       - 15692:15692
-
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     environment:
@@ -48,7 +50,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
 
   rabbitmq-exporter:
@@ -58,19 +60,13 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
     ports:
-      - "9419:9419"    # RabbitMQ Exporter para Prometheus
-
-networks:
-  default:
-    driver: bridge
+      - 9419:9419    # RabbitMQ Exporter para Prometheus
 
 volumes:
-  core_disk:
-    external: true
+  core_data:
   grafana_data:
   prometheus_data:
   rabbitmq_data:
-
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
