@@ -1,4 +1,5 @@
 import threading
+import time
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -32,20 +33,25 @@ connections = []
 channels = []
 
 for i in range(6):
-    connection, channel = start_rabbitmq_connection(
-        get_value_from_environment_variable(
-            environment_variables,
-            PossibleKeysForEnvironmentVariables.RABBITMQ_USERNAME.value),
-        get_value_from_environment_variable(
-            environment_variables,
-            PossibleKeysForEnvironmentVariables.RABBITMQ_PASSWORD.value),
-        get_value_from_environment_variable(
-            environment_variables,
-            PossibleKeysForEnvironmentVariables.RABBITMQ_HOST.value),
-        get_value_from_environment_variable(
-            environment_variables,
-            PossibleKeysForEnvironmentVariables.RABBITMQ_PORT.value)
-    )
+    while True:
+        connection, channel = start_rabbitmq_connection(
+            get_value_from_environment_variable(
+                environment_variables,
+                PossibleKeysForEnvironmentVariables.RABBITMQ_USERNAME.value),
+            get_value_from_environment_variable(
+                environment_variables,
+                PossibleKeysForEnvironmentVariables.RABBITMQ_PASSWORD.value),
+            get_value_from_environment_variable(
+                environment_variables,
+                PossibleKeysForEnvironmentVariables.RABBITMQ_HOST.value),
+            get_value_from_environment_variable(
+                environment_variables,
+                PossibleKeysForEnvironmentVariables.RABBITMQ_PORT.value)
+        )
+        if (connection != None):
+            break
+        time.sleep(5)
+    
     connections.append(connection)
     channels.append(channel)
 

@@ -23,13 +23,12 @@ services:
       - rabbitmq
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-    #command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
 
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     ports:
-      - 5672:5672  # Puerto para RabbitMQ (AMQP)
+      - 5672:5672 # Puerto para RabbitMQ (AMQP)
       - 15672:15672 # Puerto para la interfaz de administración (opcional)
       - 15692:15692
     volumes:
@@ -60,14 +59,13 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
     ports:
-      - 9419:9419    # RabbitMQ Exporter para Prometheus
+      - 9419:9419 # RabbitMQ Exporter para Prometheus
 
 volumes:
   core_data:
   grafana_data:
   prometheus_data:
   rabbitmq_data:
-
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
 # start the database before your application. The `db-data` volume persists the
