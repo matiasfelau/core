@@ -23,7 +23,7 @@ services:
       - rabbitmq
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
-    command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
+    #command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
 
   rabbitmq:
     image: rabbitmq:management
