@@ -68,3 +68,12 @@ def create_configuration_file(reader, path='/core_data/resources/config.ini'):
     except Exception as e:
         print(f'\nError in utilities.configuration.create_configuration_file(): \n{str(e)}')
         raise Exception
+
+
+def write_in_configuration_file(module, attribute):
+    """
+
+    :param module:
+    :param attribute:
+    :return:
+    """

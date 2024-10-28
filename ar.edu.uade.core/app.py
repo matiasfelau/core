@@ -1,5 +1,4 @@
 import threading
-
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
@@ -129,6 +128,21 @@ for thread in [t1, t2, t3, t4, t5, t6]:
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/api/config_retry_ttl', methods=['POST'])
+def configure_retry_ttl():
+    return 'hola'
+
+
+@app.route('/api/config_retry_quantity', methods=['POST'])
+def configure_retry_quantity():
+    return 'hola'
+
+
+@app.route('/api/get_messaging_logs', methods=['GET'])
+def configure_retry_ttl():
+    return 'hola'
 
 
 @socketio.on('connect')
