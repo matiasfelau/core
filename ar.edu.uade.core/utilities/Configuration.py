@@ -70,6 +70,7 @@ def create_configuration_file(reader, path='/core_data/resources/config.ini'):
         raise Exception
 
 
+
 def write_in_configuration_file(reader, module, attribute, value, path='/core_data/resources/config.ini'):
     """
 
