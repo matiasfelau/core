@@ -22,7 +22,7 @@ def initialize_configuration_reader(path='/core_data/resources/config.ini'):
         return None
 
 
-def check_create_configuration_file(reader, path):
+def check_create_configuration_file(reader, path='/core_data/resources/config.ini'):
     """
 
     :return:
@@ -68,3 +68,21 @@ def create_configuration_file(reader, path='/core_data/resources/config.ini'):
     except Exception as e:
         print(f'\nError in utilities.configuration.create_configuration_file(): \n{str(e)}')
         raise Exception
+
+
+def write_in_configuration_file(reader, module, attribute, value, path='/core_data/resources/config.ini'):
+    """
+
+    :param reader:
+    :param module:
+    :param attribute:
+    :param value:
+    :param path:
+    :return:
+    """
+    if module not in reader:
+        reader.add_section(module)
+    reader[module][attribute] = value
+
+    with open(path, 'w') as f:
+        reader.write(f)
