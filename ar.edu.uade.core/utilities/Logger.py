@@ -24,7 +24,7 @@ def initialize_logging_for_messaging_errors(path='/core_data/logs'):
         handler.setLevel(logging.ERROR)
 
         #Define el formato en el que se harán los logs
-        formatter = logging.Formatter('[%(asctime)s] %(message)s')
+        formatter = logging.Formatter('%(asctime)s;%(message)s')
 
         #Fija el formato al handler
         handler.setFormatter(formatter)
@@ -47,7 +47,7 @@ def log_messaging_error(app, reason, origin, destination, case):
     """
     try:
         #Integra todas las variables en el mensaje de log
-        mensaje = f'{reason}: {origin} -> {destination} ({case})'
+        mensaje = f'{reason};{origin};{destination};{case}'
 
         #Realiza el log
         app.logger.warning(mensaje)
@@ -56,7 +56,7 @@ def log_messaging_error(app, reason, origin, destination, case):
         print(f'\nError in utilities.logger.log_messaging_error(): \n{str(e)}')
 
 
-def filtrar_lineas(archivo, filtro, campo='reason'):
+def filtrar_lineas(archivo, filtro, campo, offset):
     """
     Recupera todas las líneas de un archivo que coincidan con un filtro específico en un campo dado.
 
@@ -65,7 +65,6 @@ def filtrar_lineas(archivo, filtro, campo='reason'):
     :param campo: Campo en el que se aplicará el filtro ('datetime', 'reason', 'origin', 'destination' o 'case').
     :return: Lista de líneas que cumplen con el filtro.
     """
-    # Define los índices de cada campo según el formato especificado
     campos = ['datetime', 'reason', 'origin', 'destination', 'case']
     try:
         indice_campo = campos.index(campo)
@@ -76,9 +75,11 @@ def filtrar_lineas(archivo, filtro, campo='reason'):
 
     with open(archivo, 'r') as f:
         for linea in f:
-            # Divide la línea en partes usando el carácter ';' como delimitador
+            #contar
+            #arrancar a partir del offset
             partes = linea.strip().split(';')
+            #cortar cuando llega a 10
             if len(partes) == 5 and partes[indice_campo] == filtro:
                 lineas_filtradas.append(linea.strip())
 
-    return lineas_filtradas
+    return lineas_filtradas #devolver count

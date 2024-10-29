@@ -253,12 +253,13 @@ def kill_message(channel, exchange, message, headers):
         print(f'\nError in queues.Publisher.kill_message(): \n{str(e)}')
 
 
-def initialize_publisher_retry_queues(channel, module, max_retries=3, min_ttl=30000):
+def initialize_publisher_retry_queues(channel, module, max_retries=3, min_ttl=30000, i=1):
     """
     Inicializa tantas colas de retry como sean indicadas por el administrador de la red en config.ini, con default en
     MAX_RETRIES = 3.
     Cada cola tendrá un TTL igual al doble del TTL de la cola de retry antecesora y el mínimo será el indicado por el
     administrador de la red en config.ini, con default en MIN_TTL = 30000 (milisegundos).
+    :param i:
     :param min_ttl: Requiere especificar cual será el ttl mínimo asignado a la primer cola de retry, con default en 30000
     :param max_retries: Requiere especificar cual será la cantidad máxima de colas de retry, con default en 3
     :param channel: Requiere el canal de la conexión con RabbitMQ.
@@ -272,7 +273,7 @@ def initialize_publisher_retry_queues(channel, module, max_retries=3, min_ttl=30
         #Define el exchange de retry
         channel.exchange_declare(exchange=f'{module}.retry', exchange_type='headers', durable=True)
 
-        for i in range(1, max_retries + 1):
+        for i in range(max_retries + 1):
             #Define cada cola de retry
             channel.queue_declare(queue=f'{module}.retry{i}', exclusive=False, durable=True, arguments={
                 'x-message-ttl': calculate_queue_ttl(i, min_ttl),

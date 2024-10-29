@@ -24,9 +24,9 @@ def delete_queue(queue, host, port, user, password):
         print(f"Error al eliminar la cola: {response.text}")
 
 
-def transfer_messages_from_dead_letter_queue_to_main_queue(module, host, port, user, password):
+def transfer_messages(module, source, target, host, port, user, password):
     base_url = f'http://{host}:{port}/api'
-    url_to_get = f'{base_url}/queues/%2F/{module}.dead-letter/get'
+    url_to_get = f'{base_url}/queues/%2F/{source}/get'
     credentials = (user, password)
     headers = {'content-type': 'application/json'}
     payload = {
@@ -44,7 +44,7 @@ def transfer_messages_from_dead_letter_queue_to_main_queue(module, host, port, u
     for message in messages:
         publish_payload = {
             "properties": message["properties"],
-            "routing_key": module,
+            "routing_key": target,
             "payload": message["payload"],
             "payload_encoding": "string"
         }
@@ -52,3 +52,7 @@ def transfer_messages_from_dead_letter_queue_to_main_queue(module, host, port, u
         if response.status_code != 200:
             print(f"Error al publicar mensaje: {response.text}")
     print(f"Transferidos {len(messages)} mensajes de {module}.dead-letter a {module}.")
+
+
+def create_auxiliary_queue(channel, module, offset):
+    channel.queue_declare(queue=f'{module}.auxiliary{offset}', exclusive=False, durable=True)
