@@ -1,14 +1,21 @@
+import json
 import threading
-from flask import Flask, render_template
+
+
+import requests
+from flask import Flask, render_template, request, jsonify
+
 from flask_socketio import SocketIO
 
 from brokers.RabbitMQ import start_rabbitmq_connection, end_rabbitmq_connection
 from queues.Publisher import initialize_publisher, consume_messages_from_publisher_trapping_queue
 from queues.consumers.Core import consume_messages_from_core_queue, initialize_core_queue
-from utilities.Configuration import initialize_configuration_reader
+from utilities.Configuration import initialize_configuration_reader, check_create_configuration_file, \
+    read_configuration_attribute, write_in_configuration_file
 from utilities.Enumerations import PossiblePublishers
 from utilities.Environment import *
 from utilities.Logger import initialize_logging_for_messaging_errors
+from utilities.Management import delete_queue_binding_with_exchange, delete_queue
 
 app = Flask(__name__)
 
@@ -78,6 +85,54 @@ initialize_publisher(channels[0], reader, PossiblePublishers.USUARIO.value)
 end_rabbitmq_connection(connections[0])
 
 del connections
+
+
+#TODO confirmar que el reader no necesita volver a inicializarse
+@app.route('/retry', methods=['POST'])
+def change_retrying_configuration():
+    module = request.args.get('module')
+    attribute = request.args.get('attribute')
+    value = request.args.get('value')
+
+    old_value = read_configuration_attribute(reader, module, attribute)
+
+    write_in_configuration_file(reader, module, attribute, value)
+
+    if read_configuration_attribute(reader, module, attribute) == value:
+        for j in range(old_value):
+            pass
+            #nueva cola de copiado
+
+            #delete_queue_binding_with_exchange()
+
+            #transfer
+
+            #delete_queue()
+
+        #initialize_publisher()
+
+        for k in range(old_value):
+            pass
+            #transfer
+
+            #delete_queue()
+
+        return True
+    else:
+        return False
+
+
+@app.route('/dead', methods=['GET'])
+def release_dead_messages():
+    module = request.args.get('module')
+
+    #transfer
+
+
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    pass
+
 
 #Hilos
 t1 = threading.Thread(
