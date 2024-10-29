@@ -56,10 +56,11 @@ def log_messaging_error(app, reason, origin, destination, case):
         print(f'\nError in utilities.logger.log_messaging_error(): \n{str(e)}')
 
 
-def filtrar_lineas(archivo, filtro, campo, offset):
+def filtrar_lineas(archivo, filtro, campo, offset=''):
     """
     Recupera todas las líneas de un archivo que coincidan con un filtro específico en un campo dado.
 
+    :param offset:
     :param archivo: Ruta del archivo a abrir.
     :param filtro: Valor que se busca en el campo especificado.
     :param campo: Campo en el que se aplicará el filtro ('datetime', 'reason', 'origin', 'destination' o 'case').
@@ -70,16 +71,24 @@ def filtrar_lineas(archivo, filtro, campo, offset):
         indice_campo = campos.index(campo)
     except ValueError:
         raise ValueError(f"Campo '{campo}' no válido. Debe ser uno de: {', '.join(campos)}")
-
     lineas_filtradas = []
-
     with open(archivo, 'r') as f:
-        for linea in f:
-            #contar
-            #arrancar a partir del offset
-            partes = linea.strip().split(';')
-            #cortar cuando llega a 10
-            if len(partes) == 5 and partes[indice_campo] == filtro:
-                lineas_filtradas.append(linea.strip())
+        b = False
+        while len(lineas_filtradas) < 10:
+            linea = f.readline()
+            if linea == '':
+                break
+            elif b:
+                process_line(filtro, indice_campo, linea, lineas_filtradas)
+            elif offset != '' and not linea.startswith(offset):
+                continue
+            else:
+                process_line(filtro, indice_campo, linea, lineas_filtradas)
+                b = True
+    return lineas_filtradas
 
-    return lineas_filtradas #devolver count
+
+def process_line(filtro, indice_campo, linea, lineas_filtradas):
+    partes = linea.strip().split(';')
+    if len(partes) == 5 and partes[indice_campo] == filtro:
+        lineas_filtradas.append(linea.strip())

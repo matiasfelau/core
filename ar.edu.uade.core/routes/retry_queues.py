@@ -13,7 +13,7 @@ retry_queues = Blueprint('retry_queues', __name__)
 
 
 #TODO confirmar que el reader no necesita volver a inicializarse
-@retry_queues.route('/retry_queues', methods=['POST'])
+@retry_queues.route('/retry_queues', methods=['GET'])
 def change_retrying_configuration():
     """
 
