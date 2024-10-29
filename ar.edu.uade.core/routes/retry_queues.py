@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from brokers.RabbitMQ import start_rabbitmq_connection
+from brokers.RabbitMQ import start_rabbitmq_connection, end_rabbitmq_connection
 from queues.Publisher import initialize_publisher, initialize_publisher_retry_queues
 from utilities import storage
 from utilities.Configuration import initialize_configuration_reader, read_configuration_attribute, \
@@ -85,6 +85,7 @@ def change_retrying_configuration():
                     )
                     delete_retry_queue(channel, old_value, module)
                     old_value -= 1
+        end_rabbitmq_connection(connection)
         return True
     else:
         return False
