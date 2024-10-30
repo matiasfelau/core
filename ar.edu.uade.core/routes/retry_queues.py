@@ -25,6 +25,8 @@ def change_retrying_configuration():
         value = request.args.get('value')
         old_value = read_configuration_attribute(storage.reader, module, attribute)
         write_in_configuration_file(storage.reader, module, attribute, value)
+        if old_value is None:
+            old_value = read_configuration_attribute(storage.reader, module, attribute)
         if read_configuration_attribute(storage.reader, module, attribute) == value:
             connection, channel = start_rabbitmq_connection(
                 storage.rabbitmq_user_username,
