@@ -99,10 +99,6 @@ end_rabbitmq_connection(connections[0])
 
 del connections
 
-
-
-
-
 #Hilos
 t1 = threading.Thread(
     target=socketio.run,
@@ -152,21 +148,6 @@ for thread in [t1, t2, t3, t4, t5, t6]:
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-@app.route('/api/config_retry_ttl', methods=['POST'])
-def configure_retry_ttl():
-    return 'hola'
-
-
-@app.route('/api/config_retry_quantity', methods=['POST'])
-def configure_retry_quantity():
-    return 'hola'
-
-
-@app.route('/api/get_messaging_logs', methods=['GET'])
-def configure_retry_ttl():
-    return 'hola'
 
 
 @socketio.on('connect')

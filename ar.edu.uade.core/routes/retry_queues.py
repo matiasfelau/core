@@ -67,7 +67,7 @@ def change_retrying_configuration():
                     module,
                     max_retries=value,
                     min_ttl=read_configuration_attribute(storage.reader, module, 'TTL'),
-                    i=old_value + 1
+                    offset=old_value + 1
                 )
             else:  #TODO avisarle a toms que avise antes de cambiar la cantidad que los mensajes iran a dlx
                 queues_quantity = old_value
