@@ -24,6 +24,7 @@ class PossibleKeysForEnvironmentVariables(Enum):
     RABBITMQ_PASSWORD = 'rabbitmq_password'
     CONFIGURATION_FILE_PATH = 'configuration_file_path'
     LOGS_PATH = 'logs_path'
+    ENVIRONMENT = 'environment'
 
 
 class PossibleKeysForPublisherConfiguration(Enum):

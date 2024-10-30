@@ -25,9 +25,11 @@ def get_environment_variables():
             (PossibleKeysForEnvironmentVariables.RABBITMQ_PASSWORD.value,
              os.getenv('RABBITMQ_PASSWORD')),
             (PossibleKeysForEnvironmentVariables.CONFIGURATION_FILE_PATH.value,
-             os.getenv('CONFIGURATION_FILE_PATH', '/core_data/resources/config.ini')),
+             os.getenv('CONFIGURATION_PATH', '/core_data/resources/config.ini')),
             (PossibleKeysForEnvironmentVariables.LOGS_PATH.value,
-             os.getenv('LOGS_PATH', '/core_data/logs'))
+             os.getenv('LOGS_PATH', '/core_data/logs')),
+            (PossibleKeysForEnvironmentVariables.ENVIRONMENT.value,
+             os.getenv('ENVIRONMENT', 'test'))
         )
         return environment_variables
     except Exception as e:

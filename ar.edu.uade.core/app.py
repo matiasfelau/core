@@ -19,6 +19,7 @@ from utilities.Enumerations import PossiblePublishers
 from utilities.Environment import *
 from utilities.Logger import initialize_logging_for_messaging_errors
 from utilities.Management import delete_queue_binding_with_exchange, delete_queue, create_auxiliary_queue
+from utilities.authenticator import initialize_authenticator_queue
 
 app = Flask(__name__)
 
@@ -84,6 +85,9 @@ else:
 #Queues
 #Consumers
 initialize_core_queue(channels[0])
+
+#RPC
+initialize_authenticator_queue(channels[0])
 
 #Publishers
 initialize_publisher(channels[0], reader, PossiblePublishers.E_COMMERCE.value)

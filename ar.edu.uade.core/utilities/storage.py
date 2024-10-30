@@ -7,9 +7,11 @@ rabbitmq_host = get_value_from_environment_variable(environment_variables, 'RABB
 
 rabbitmq_port = get_value_from_environment_variable(environment_variables, 'RABBITMQ_PORT')
 
-rabbitmq_user_username = get_value_from_environment_variable(environment_variables, 'RABBITMQ_USER')
+rabbitmq_user_username = get_value_from_environment_variable(environment_variables, 'RABBITMQ_USERNAME')
 
 rabbitmq_user_password = get_value_from_environment_variable(environment_variables, 'RABBITMQ_PASSWORD')
+
+environment = get_value_from_environment_variable(environment_variables, 'ENVIRONMENT')
 
 reader = initialize_configuration_reader(
     get_value_from_environment_variable(environment_variables, 'CONFIGURATION_PATH'))
