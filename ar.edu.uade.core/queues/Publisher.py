@@ -331,6 +331,7 @@ def publish_message(channel, module, message):
     """
     if check_valid_publisher(module):
         try:
+            message = json.dumps(message).encode('utf-8')
             #Publica en la cola del módulo especificado
             channel.basic_publish(exchange=module, routing_key=module, body=message, mandatory=True,
                                   properties=pika.BasicProperties(

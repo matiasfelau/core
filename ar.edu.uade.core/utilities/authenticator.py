@@ -19,9 +19,7 @@ class Authenticator:
         self.response = None
         self.connection = connection
         self.channel = channel
-        channel.exchange_declare(exchange='core.rpc', exchange_type='direct', exclusive=True)
         result = channel.queue_declare(queue='core.rpc', exclusive=True)
-        channel.queue_bind(exchange='core.rpc', queue='core.rpc', routing_key='core.rpc')
         self.callback_queue = result.method.queue
         channel.basic_consume(
             queue=self.callback_queue,
@@ -39,7 +37,7 @@ class Authenticator:
         :return:
         """
         if self.corr_id == props.correlation_id:
-            self.response = convert_body(body).get('payload')
+            self.response = body.decode('utf-8')
 
     def authenticate(self, message, timeout_ms=1000):
         """
@@ -51,13 +49,13 @@ class Authenticator:
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
-            exchange='gestion_interna',
+            exchange='gestion_interna.rpc',
             routing_key='gestion_interna.rpc',
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id
             ),
-            body=str(message)
+            body=message
         )
         start_time = time.time()
         timeout = timeout_ms / 1000
@@ -78,7 +76,7 @@ def convert_body(body):
     try:
         return json.loads(body.decode('utf-8'))
     except Exception as e:
-        print(f'\nError in sender.convert_body(): \n{str(e)}')
+        print(f'\nError in authenticator.convert_body(): \n{str(e)}')
         return None
 
 
