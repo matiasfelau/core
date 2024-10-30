@@ -16,7 +16,8 @@ def release_dead_messages():
         source,
         target,
         storage.rabbitmq_host,
-        storage.rabbitmq_port,
+        storage.rabbitmq_management_port,
         storage.rabbitmq_user_username,
         storage.rabbitmq_user_password
     )
+    return '200' #TODO verificar cuantos mensajes quedan en la cola, puede ser una diff

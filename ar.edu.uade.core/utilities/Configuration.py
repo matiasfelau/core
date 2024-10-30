@@ -31,7 +31,7 @@ def check_create_configuration_file(reader, path='/core_data/resources/config.in
         #Obtiene la ruta del directorio al que pertenece el archivo.
         file_directory_path = path.rpartition('/')[0]
 
-        if check_path(path):
+        if not check_path(path):
             check_create_path(file_directory_path)
             create_configuration_file(reader)
     except Exception as e:

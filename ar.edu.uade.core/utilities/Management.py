@@ -47,7 +47,7 @@ def transfer_messages(module, source, target, host, port, user, password):
         credentials = (user, password)
         headers = {'content-type': 'application/json'}
         payload = {
-            "count": 0,
+            "count": 10000, #TODO hacerlo por lotes
             "ackmode": "ack_requeue_false",
             "encoding": "auto",
             "truncate": 50000

@@ -4,6 +4,7 @@ import threading
 
 import requests
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 
 from flask_socketio import SocketIO
 
@@ -22,6 +23,8 @@ from utilities.Management import delete_queue_binding_with_exchange, delete_queu
 from utilities.authenticator import initialize_authenticator_queue
 
 app = Flask(__name__)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 app.register_blueprint(retry_queues)
 
