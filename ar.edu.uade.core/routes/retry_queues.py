@@ -40,18 +40,10 @@ def change_retrying_configuration():
             if attribute == 'ttl':
                 queues_quantity = get_int_attribute(storage.reader, module, 'qty')
                 for i in range(1, queues_quantity + 1):
-                    exchange = f'{module}.retry'
                     source = f'{module}.retry{i}'
                     target = f'{module}.auxiliary{i}'
                     create_auxiliary_queue(channel, module, i)
-                    delete_queue_binding_with_exchange(
-                        exchange,
-                        source,
-                        storage.rabbitmq_host,
-                        storage.rabbitmq_management_port,
-                        storage.rabbitmq_user_username,
-                        storage.rabbitmq_user_password
-                    )
+
                     transfer_messages(
                         module,
                         source,
@@ -94,35 +86,26 @@ def change_retrying_configuration():
                         storage.rabbitmq_user_password
                     )
             else:
-                if value > old_value:
+                if int(value) > old_value:
                     initialize_publisher_retry_queues(
                         channel,
                         module,
-                        max_retries=value,
+                        max_retries=int(value),
                         min_ttl=get_int_attribute(storage.reader, module, 'ttl'),
                         offset=old_value + 1
                     )
-                else:  #TODO avisarle a toms que avise antes de cambiar la cantidad que los mensajes iran a dlx
+                else:  #TODO avisarle a toms que avise antes de cambiar la cantidad que los mensajes iran a dlx y que se podrian perder algunos msj
                     queues_quantity = old_value
                     actual_value = queues_quantity
-                    for i in range(queues_quantity - value):
-                        exchange = f'{module}.retry'
+                    for i in range(queues_quantity - int(value)):
                         source = f'{module}.retry{actual_value}'
                         target = f'{module}.dead-letter'
-                        delete_queue_binding_with_exchange(
-                            exchange,
-                            source,
-                            storage.rabbitmq_host,
-                            storage.rabbitmq_management_port,
-                            storage.rabbitmq_user_username,
-                            storage.rabbitmq_user_password
-                        )
                         transfer_messages(
                             module,
                             source,
                             target,
                             storage.rabbitmq_host,
-                            storage.rabbitmq_port,
+                            storage.rabbitmq_management_port,
                             storage.rabbitmq_user_username,
                             storage.rabbitmq_user_password
                         )
