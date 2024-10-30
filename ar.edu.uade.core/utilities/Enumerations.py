@@ -22,9 +22,10 @@ class PossibleKeysForEnvironmentVariables(Enum):
     RABBITMQ_PORT = 'rabbitmq_port'
     RABBITMQ_USERNAME = 'rabbitmq_username'
     RABBITMQ_PASSWORD = 'rabbitmq_password'
-    CONFIGURATION_FILE_PATH = 'configuration_file_path'
+    CONFIGURATION_PATH = 'configuration_path'
     LOGS_PATH = 'logs_path'
     ENVIRONMENT = 'environment'
+    RABBITMQ_MANAGEMENT_PORT = 'rabbitmq_management_port'
 
 
 class PossibleKeysForPublisherConfiguration(Enum):

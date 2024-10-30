@@ -110,7 +110,9 @@ t1 = threading.Thread(
         'port': get_value_from_environment_variable(
             environment_variables,
             PossibleKeysForEnvironmentVariables.FLASK_PORT.value),
-        'debug': True},
+        'debug': True,
+        'allow_unsafe_werkzeug': True
+    },
     name='runningApp'
 )
 t2 = threading.Thread(

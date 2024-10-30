@@ -2,7 +2,7 @@ import json
 
 import pika
 
-from utilities.Configuration import read_configuration_attribute
+from utilities.Configuration import read_configuration_attribute, get_int_attribute
 from utilities.Enumerations import PossiblePublishers, PossibleKeysForPublisherConfiguration
 from utilities.Logger import log_messaging_error
 from utilities.Utilities import check_void_parameter
@@ -69,15 +69,6 @@ def get_publisher_configuration(reader, module):
     except Exception as e:
         print(f'\nError in queues.Publisher.get_publisher_configuration(): \n{str(e)}')
         return None
-
-
-def get_int_attribute(reader, module, attribute):
-    """
-
-    :return:
-    """
-    attribute = read_configuration_attribute(reader, module, attribute)
-    return int(attribute) if not None else attribute
 
 
 def check_valid_publisher(module):

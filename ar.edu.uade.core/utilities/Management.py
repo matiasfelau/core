@@ -4,15 +4,25 @@ import requests
 from flask import request
 
 
-def delete_queue_binding_with_exchange(exchange, queue, key, host, port, user, password):
+@DeprecationWarning
+def delete_queue_binding_with_exchange(exchange, queue, host, port, user, password):
+    print('delete_queue_binding_with_exchange')
+    print(exchange, queue)
+
     try:
-        url = f'http://{host}:{port}/api/bindings/%2F/e/{exchange}/q/{queue}/{key}'
+        url = f'http://{host}:{port}/api/bindings/%2F/e/{exchange}/q/{queue}/{queue}'
         credentials = (user, password)
         response = requests.delete(url, auth=credentials)
         if response.status_code == 204:
-            print(f"Binding entre el exchange '{exchange}' y la cola '{queue}' con routing key '{key}' eliminado.")
+            print(f"Binding entre el exchange '{exchange}' y la cola '{queue}' con routing key '{queue}' eliminado.")
+            url = f'http://{host}:{port}/api/queues/%2F/{queue}/bindings'
+            response = requests.get(url, auth=(user, password)).json()
+            print(response)
         else:
             print(f"Error al eliminar el binding: {response.text}")
+            url = f'http://{host}:{port}/api/queues/%2F/{queue}/bindings'
+            response = requests.get(url, auth=(user, password)).json()
+            print(response)
     except Exception as e:
         print(f'\nError in utilities.management.delete_queue_binding_with_exchange(): \n{str(e)}')
 

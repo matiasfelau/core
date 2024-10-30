@@ -80,9 +80,21 @@ def write_in_configuration_file(reader, module, attribute, value, path='/core_da
     :param path:
     :return:
     """
-    if module not in reader:
-        reader.add_section(module)
-    reader[module][attribute] = value
+    try:
+        if module not in reader:
+            reader.add_section(module)
+        reader[module][attribute] = value
+        with open(path, 'w') as f:
+            reader.write(f)
+    except Exception as e:
+        print(f'\nError in utilities.configuration.write_in_configuration_file(): \n{str(e)}')
 
-    with open(path, 'w') as f:
-        reader.write(f)
+
+def get_int_attribute(reader, module, attribute):
+    """
+
+    :return:
+    """
+    value = read_configuration_attribute(reader, module, attribute)
+    result = lambda v: int(v) if v is not None else None
+    return result(value)
