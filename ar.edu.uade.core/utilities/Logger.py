@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging.handlers import TimedRotatingFileHandler
 
 from utilities.Files import check_create_path
@@ -17,8 +17,10 @@ def initialize_logging_for_messaging_errors(path='/core_data/logs'):
         path = check_void_parameter(path, PATH)
         check_create_path(path)
 
+        local_time = datetime.now() - timedelta(hours=3)
+
         #Inicializa un handler que crea un nuevo archivo con el cambio de fecha
-        handler = TimedRotatingFileHandler(path + f'/{datetime.now().date()}.log', when='midnight', interval=1)
+        handler = TimedRotatingFileHandler(path + f'/{local_time.date()}.log', when='midnight', interval=1)
 
         #Define el tipo de logs que manejará este handler
         handler.setLevel(logging.ERROR)
@@ -74,7 +76,9 @@ def filtrar_lineas(archivo, filtro, campo, offset, date):
     if offset == '':
         offset = ''
     if date == '':
-        date = f'/{datetime.now().date()}.log'
+        local_time = datetime.now() - timedelta(hours=3)
+        date = f'/{local_time.date()}.log'
+        print(date)
     else:
         date = '/'+date+'.log'
     campos = ['datetime', 'reason', 'origin', 'destination', 'case']
