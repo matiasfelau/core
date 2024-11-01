@@ -50,7 +50,7 @@ socketio = SocketIO(
 connections = []
 channels = []
 
-for i in range(6):
+for i in range(7):
     connection, channel = start_rabbitmq_connection(
         get_value_from_environment_variable(
             environment_variables,
@@ -94,6 +94,7 @@ initialize_authenticator_queue(channels[0])
 
 #Publishers
 initialize_publisher(channels[0], reader, PossiblePublishers.E_COMMERCE.value)
+initialize_publisher(channels[0], reader, PossiblePublishers.AUTENTICACION.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_FINANCIERA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_INTERNA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.USUARIO.value)
@@ -142,6 +143,11 @@ t6 = threading.Thread(
     target=consume_messages_from_publisher_trapping_queue,
     args=(app, channels[5], PossiblePublishers.USUARIO.value),
     name='consumingUsuario'
+)
+t7 = threading.Thread(
+    target=consume_messages_from_publisher_trapping_queue,
+    args=(app, channels[6], PossiblePublishers.AUTENTICACION.value),
+    name='consumingAutenticacion'
 )
 
 del channels

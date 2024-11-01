@@ -9,6 +9,7 @@ class PossiblePublishers(Enum):
     GESTION_FINANCIERA = 'gestion_financiera'
     GESTION_INTERNA = 'gestion_interna'
     USUARIO = 'usuario'
+    AUTENTICACION = 'autenticacion'
 
 
 class PossibleKeysForEnvironmentVariables(Enum):
