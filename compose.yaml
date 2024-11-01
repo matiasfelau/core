@@ -28,6 +28,8 @@ services:
   core_interface:
     image: tm2003/squad1front:1.0
     container_name: core-interface
+    env_file:
+      - .env
     ports:
       - "3002:3002"
     environment:
@@ -48,6 +50,8 @@ services:
       - "15692:15692"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf  # Archivo de configuración
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -78,6 +82,10 @@ services:
 
 volumes:
   core_data:
+    external: true
   grafana_data:
+    external: true
   prometheus_data:
+    external: true
   rabbitmq_data:
+    external: true
