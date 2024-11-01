@@ -18,20 +18,34 @@ services:
     volumes:
       - core_data:/core_data
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
       - rabbitmq
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
 
+  core_interface:
+    image: tm2003/squad1front:tag
+    container_name: core-interface
+    ports:
+      - "3002:3002"
+    environment:
+      - GRAFANA_URL=http://grafana:3000
+
+  core_proxy:
+    image: tm2003/squad1proxy:tag
+    container_name: core-proxy
+    ports:
+      - "3001:3001"
+
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     ports:
-      - 5672:5672  # Puerto para RabbitMQ (AMQP)
-      - 15672:15672 # Puerto para la interfaz de administración (opcional)
-      - 15692:15692
+      - "5672:5672"  # Puerto para RabbitMQ (AMQP)
+      - "15672:15672" # Puerto para la interfaz de administración (opcional)
+      - "15692:15692"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     environment:
@@ -41,14 +55,14 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - 3000:3000 # Puerto Grafana
+      - "3000:3000" # Puerto Grafana
     volumes:
       - grafana_data:/var/lib/grafana
 
   prometheus:
     image: prom/prometheus
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -60,44 +74,10 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
     ports:
-      - 9419:9419    # RabbitMQ Exporter para Prometheus
+      - "9419:9419"    # RabbitMQ Exporter para Prometheus
 
 volumes:
   core_data:
   grafana_data:
   prometheus_data:
   rabbitmq_data:
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
-
