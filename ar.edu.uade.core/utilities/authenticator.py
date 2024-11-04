@@ -84,7 +84,7 @@ def initialize_authenticator_queue(channel):
     channel.exchange_declare(exchange='gestion_interna.rpc', exchange_type='direct', durable=True)
 
     # Declara la cola
-    channel.queue_declare(queue='gestion_interna.rpc', exclusive=False, durable=True)
+    channel.queue_declare(queue='gestion_interna.rpc', exclusive=True, durable=True)
 
     # Enlaza la cola al exchange
     channel.queue_bind(exchange='gestion_interna.rpc', queue='gestion_interna.rpc', routing_key='gestion_interna.rpc')
