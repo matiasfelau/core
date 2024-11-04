@@ -50,7 +50,14 @@ def consume_messages_from_core_queue(channel):
                         authenticator_channel,
                     )
                     token = payload.get('token')
-                    encode = json.dumps(token).encode('utf-8')
+                    user = payload.get('user')
+                    origin = payload.get('origin')
+                    authentication_body = {
+                        'token': token,
+                        'user': user,
+                        'origin': origin
+                    }
+                    encode = json.dumps(authentication_body).encode('utf-8')
                     response = authenticator.authenticate(encode)
                     end_rabbitmq_connection(authenticator_connection)
                     if response == 'True':
@@ -116,6 +123,7 @@ def check_valid_message(message):
             message.get('payload') != '',
             message.get('status') != '',
             message.get('type') != '',
+            message.get('user') != ''
         ]
         return False not in checkouts
     except Exception as e:
