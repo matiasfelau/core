@@ -90,11 +90,11 @@ else:
 initialize_core_queue(channels[0])
 
 #RPC
-initialize_authenticator_queue(channels[0])
+#initialize_authenticator_queue(channels[0])
 
 #Publishers
 initialize_publisher(channels[0], reader, PossiblePublishers.E_COMMERCE.value)
-#initialize_publisher(channels[0], reader, PossiblePublishers.AUTENTICACION.value)
+initialize_publisher(channels[0], reader, PossiblePublishers.AUTENTICACION.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_FINANCIERA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_INTERNA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.USUARIO.value)
