@@ -1,6 +1,6 @@
 import json
 
-from sender import Authenticator
+from sender import Authenticator, close_connection
 from flask import Blueprint, request
 
 from brokers.RabbitMQ import start_rabbitmq_connection
@@ -25,4 +25,6 @@ def signin():
         storage.rabbitmq_port
     )
     authenticator = Authenticator(connection, channel, 'core_auth')
-    return authenticator.authenticate(credentials)
+    response = authenticator.authenticate(credentials)
+    close_connection(connection)
+    return response
