@@ -11,8 +11,9 @@ from flask_socketio import SocketIO
 from brokers.RabbitMQ import start_rabbitmq_connection, end_rabbitmq_connection
 from queues.Publisher import initialize_publisher, consume_messages_from_publisher_trapping_queue
 from queues.consumers.Core import consume_messages_from_core_queue, initialize_core_queue
-from routes.login import login
+
 from routes.dead_letter_queue import dead_letter_queue
+from routes.login import login
 from routes.logs import logs
 from routes.retry_queues import retry_queues
 from utilities.Configuration import initialize_configuration_reader, check_create_configuration_file, \
