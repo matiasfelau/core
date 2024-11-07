@@ -11,6 +11,7 @@ from flask_socketio import SocketIO
 from brokers.RabbitMQ import start_rabbitmq_connection, end_rabbitmq_connection
 from queues.Publisher import initialize_publisher, consume_messages_from_publisher_trapping_queue
 from queues.consumers.Core import consume_messages_from_core_queue, initialize_core_queue
+from routes.login import login
 from routes.dead_letter_queue import dead_letter_queue
 from routes.logs import logs
 from routes.retry_queues import retry_queues
@@ -37,6 +38,8 @@ app.register_blueprint(retry_queues)
 app.register_blueprint(dead_letter_queue)
 
 app.register_blueprint(logs)
+
+app.register_blueprint(login)
 
 #Environment Variables
 environment_variables = get_environment_variables()
