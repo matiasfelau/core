@@ -9,7 +9,7 @@ from utilities import storage
 login = Blueprint('login', __name__)
 
 
-@login.route('/login', methods=['POST'])
+@login.route('/authlogin', methods=['POST'])
 def signin():
     credentials = json.dumps(request.json)
     connection, channel = start_rabbitmq_connection(
