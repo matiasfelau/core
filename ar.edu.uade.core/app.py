@@ -24,7 +24,13 @@ from utilities.authenticator import initialize_authenticator_queue
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": [
+    "http://grafana:3000",
+    "http://core_proxy:3001",
+    "http://core_interface:3002",
+    "http://core_service:8000",
+    "http://prometheus:9090"
+]}})
 
 app.register_blueprint(retry_queues)
 
