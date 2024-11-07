@@ -1,7 +1,6 @@
 import json
 import threading
 
-
 import requests
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
@@ -26,13 +25,9 @@ from utilities.authenticator import initialize_authenticator_queue
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": [
-    "http://grafana:3000",
-    "http://core_proxy:3001",
-    "http://core_interface:3002",
-    "http://core_service:8000",
-    "http://prometheus:9090"
-]}})
+from flask_cors import CORS
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(retry_queues)
 
