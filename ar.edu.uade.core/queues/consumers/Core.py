@@ -55,14 +55,15 @@ def consume_messages_from_core_queue(channel):
                     authentication_body = {
                         'token': token,
                         'user': user,
-                        'origin': origin
+                        'origin': origin,
+                        'case': 'verify'
                     }
                     encode = json.dumps(authentication_body).encode('utf-8')
                     response = authenticator.authenticate(encode)
                     end_rabbitmq_connection(authenticator_connection)
                     if response == 'True':
                         publish_message(channel, payload.get('destination').lower(), payload)
-                    elif not response:
+                    else:
                         if storage.environment == 'test' and payload.get('status') == '600':
                             publish_message(channel, payload.get('destination').lower(), payload)
                         else:
