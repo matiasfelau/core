@@ -21,7 +21,7 @@ from utilities.Enumerations import PossiblePublishers
 from utilities.Environment import *
 from utilities.Logger import initialize_logging_for_messaging_errors
 from utilities.Management import delete_queue_binding_with_exchange, delete_queue, create_auxiliary_queue
-from utilities.authenticator import initialize_authenticator_queue
+
 
 app = Flask(__name__)
 
@@ -94,12 +94,9 @@ else:
 #Consumers
 initialize_core_queue(channels[0])
 
-#RPC
-#initialize_authenticator_queue(channels[0])
-
 #Publishers
 initialize_publisher(channels[0], reader, PossiblePublishers.E_COMMERCE.value)
-initialize_publisher(channels[0], reader, PossiblePublishers.AUTENTICACION.value)
+#initialize_publisher(channels[0], reader, PossiblePublishers.AUTENTICACION.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_FINANCIERA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.GESTION_INTERNA.value)
 initialize_publisher(channels[0], reader, PossiblePublishers.USUARIO.value)
@@ -149,15 +146,15 @@ t6 = threading.Thread(
     args=(app, channels[5], PossiblePublishers.USUARIO.value),
     name='consumingUsuario'
 )
-t7 = threading.Thread(
-    target=consume_messages_from_publisher_trapping_queue,
-    args=(app, channels[6], PossiblePublishers.AUTENTICACION.value),
-    name='consumingAutenticacion'
-)
+# t7 = threading.Thread(
+#     target=consume_messages_from_publisher_trapping_queue,
+#     args=(app, channels[6], PossiblePublishers.AUTENTICACION.value),
+#     name='consumingAutenticacion'
+# )
 
 del channels
 
-for thread in [t1, t2, t3, t4, t5, t6, t7]:
+for thread in [t1, t2, t3, t4, t5, t6]:
     thread.start()
 
 

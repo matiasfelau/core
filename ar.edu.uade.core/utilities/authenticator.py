@@ -78,13 +78,3 @@ def convert_body(body):
     except Exception as e:
         print(f'\nError in authenticator.convert_body(): \n{str(e)}')
         return None
-
-
-def initialize_authenticator_queue(channel):
-    channel.exchange_declare(exchange='gestion_interna.rpc', exchange_type='direct', durable=False)
-
-    # Declara la cola
-    channel.queue_declare(queue='gestion_interna.rpc', exclusive=True, durable=False)
-
-    # Enlaza la cola al exchange
-    channel.queue_bind(exchange='gestion_interna.rpc', queue='gestion_interna.rpc', routing_key='gestion_interna.rpc')
