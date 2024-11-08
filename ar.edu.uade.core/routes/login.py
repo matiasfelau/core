@@ -24,7 +24,11 @@ def signin():
         storage.rabbitmq_host,
         storage.rabbitmq_port
     )
-    authenticator = Authenticator(connection, channel, 'core_auth')
-    response = authenticator.authenticate(credentials)
+    try:
+        authenticator = Authenticator(connection, channel, 'core_auth')
+        response = authenticator.authenticate(credentials)
+        return response
+    except Exception as e:
+        print(f'\nError in routes.signin(): \n{str(e)}')
     end_rabbitmq_connection(connection)
-    return response
+
