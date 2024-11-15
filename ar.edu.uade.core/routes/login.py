@@ -16,7 +16,8 @@ def signin():
     cheison = {
         'username': username,
         'password': password,
-        'case': 'login'
+        'case': 'login',
+        'origin': 'core'
     }
     credentials = json.dumps(cheison)
     connection, channel = start_rabbitmq_connection(
