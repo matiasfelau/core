@@ -60,6 +60,9 @@ services:
     image: grafana/grafana
     ports:
       - "3000:3000" # Puerto Grafana
+    environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_X_FRAME_OPTIONS=""
     volumes:
       - grafana_data:/var/lib/grafana
 
