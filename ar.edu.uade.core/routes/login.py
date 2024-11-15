@@ -14,7 +14,7 @@ def signin():
     username = request.args.get('username')
     password = request.args.get('password')
     cheison = {
-        'username': username,
+        'user': username,
         'password': password,
         'case': 'login',
         'origin': 'core'
