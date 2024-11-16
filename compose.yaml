@@ -79,9 +79,9 @@ services:
     env_file:
       - .env
     environment:
-      RABBITMQ_URL: http://3.142.225.39:15672/
-      RABBITMQ_USER: admin
-      RABBITMQ_PASSWORD: 59482*M97&!@3@%$2$r@
+      - RABBITMQ_URL=http://3.142.225.39:15672/
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=59482*M97&!@3@%$2$r@
     ports:
       - "9419:9419"    # RabbitMQ Exporter para Prometheus
 
