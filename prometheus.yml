@@ -8,9 +8,8 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'rabbitmq'
-    metrics_path: /metrics
     static_configs:
-      - targets: ['rabbitmq-exporter:9419']
+      - targets: ['rabbitmq:15692']
 
   - job_name: 'grafana'
     static_configs:
