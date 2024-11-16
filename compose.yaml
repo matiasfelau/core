@@ -80,8 +80,8 @@ services:
       - .env
     environment:
       RABBITMQ_URL: http://rabbitmq:15672/
-      RABBITMQ_USER: ${RABBITMQ_USERNAME:-guest}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_USER: admin
+      RABBITMQ_PASSWORD: 59482*M97&!@3@%$2$r@
     ports:
       - "9419:9419"    # RabbitMQ Exporter para Prometheus
 
