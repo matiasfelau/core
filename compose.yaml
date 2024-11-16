@@ -76,10 +76,12 @@ services:
 
   rabbitmq-exporter:
     image: kbudde/rabbitmq-exporter
+    env_file:
+      - .env
     environment:
       RABBITMQ_URL: http://rabbitmq:15672/
-      RABBITMQ_USER: guest
-      RABBITMQ_PASSWORD: guest
+      RABBITMQ_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
     ports:
       - "9419:9419"    # RabbitMQ Exporter para Prometheus
 
