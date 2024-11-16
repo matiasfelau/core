@@ -26,7 +26,7 @@ services:
     command: ["wait-for-it.sh", "rabbitmq:5672", "--", "gunicorn", "app:app", "--bind=0.0.0.0:8000"]  # Usa wait-for-it para esperar a RabbitMQ
 
   core_interface:
-    image: tm2003/squad1front:3.1
+    image: tm2003/squad1front:3.2
     container_name: core-interface
     env_file:
       - .env
@@ -36,7 +36,7 @@ services:
       - GRAFANA_URL=http://grafana:3000
 
   core_proxy:
-    image: tm2003/squad1proxy:1.7
+    image: tm2003/squad1proxy:1.8
     container_name: core-proxy
     ports:
       - "3001:3001"
