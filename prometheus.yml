@@ -10,7 +10,7 @@ scrape_configs:
   - job_name: 'rabbitmq'
     metrics_path: /metrics
     static_configs:
-      - targets: ['rabbitmq:15672']
+      - targets: ['rabbitmq-exporter:9419']
 
   - job_name: 'grafana'
     static_configs:
