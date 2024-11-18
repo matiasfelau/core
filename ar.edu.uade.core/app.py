@@ -25,8 +25,6 @@ from utilities.Management import delete_queue_binding_with_exchange, delete_queu
 
 app = Flask(__name__)
 
-from flask_cors import CORS
-
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(retry_queues)
