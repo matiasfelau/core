@@ -49,8 +49,8 @@ class Authenticator:
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
-            exchange='gestion_interna.rpc',
-            routing_key='gestion_interna.rpc',
+            exchange='autenticacion.rpc',
+            routing_key='autenticacion.rpc',
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id
