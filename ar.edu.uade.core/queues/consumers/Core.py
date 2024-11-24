@@ -64,6 +64,7 @@ def consume_messages_from_core_queue(channel):
                     if response == 'True':
                         publish_message(channel, payload.get('destination').lower(), payload)
                     else:
+
                         if storage.environment == 'test' and payload.get('status') == '600':
                             publish_message(channel, payload.get('destination').lower(), payload)
                         else:

@@ -27,7 +27,7 @@ def signin():
         storage.rabbitmq_port
     )
     try:
-        authenticator = Authenticator(connection, channel, 'core_auth')
+        authenticator = Authenticator(connection, channel)
         response = authenticator.authenticate(credentials)
         return response
     except Exception as e:
