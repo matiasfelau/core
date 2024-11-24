@@ -1,10 +1,10 @@
 import json
 
-from sender import Authenticator, close_connection
 from flask import Blueprint, request
 
 from brokers.RabbitMQ import start_rabbitmq_connection, end_rabbitmq_connection
 from utilities import storage
+from utilities.authenticator import Authenticator
 
 login = Blueprint('login', __name__)
 
@@ -27,7 +27,7 @@ def signin():
         storage.rabbitmq_port
     )
     try:
-        authenticator = Authenticator(connection, channel, 'core')
+        authenticator = Authenticator(connection, channel)
         response = authenticator.authenticate(credentials)
         return response
     except Exception as e:
